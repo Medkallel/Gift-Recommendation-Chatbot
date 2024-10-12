@@ -1,7 +1,7 @@
 # main.py
 
 import os
-
+import time
 import streamlit as st
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
@@ -16,17 +16,17 @@ load_dotenv()
 
 st.set_page_config(page_icon="🎁", page_title="Gift Recommendation Assistant")
 
-# Embeddings
-embeddings_model_name = "multi-qa-mpnet-base-dot-v1"
-embeddings = HuggingFaceEmbeddings(model_name=embeddings_model_name)
 
 # Vector Store
 persist_directory = './chroma_vectorstore/'
 
 if "retriever" not in st.session_state:
+    # Embeddings
+    embeddings_model_name = "multi-qa-mpnet-base-dot-v1"
+    embeddings = HuggingFaceEmbeddings(model_name=embeddings_model_name)
     # Retrieval and Generation
     vectorstore = Chroma(persist_directory=persist_directory,embedding_function=embeddings)
-    st.session_state.retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 6})
+    st.session_state.retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={"k": 6})
 
 llm = ChatOpenAI(base_url="https://api.together.xyz/v1", api_key=os.getenv("TOGETHER_API_KEY"), model="meta-llama/Llama-Vision-Free")
 
@@ -62,7 +62,7 @@ template = """
 ### 4. Formatting:
    - **If you need more information**, ask questions first before providing recommendations.
    - **Follow this structured format for each recommendation:**
-     - **Recommendation Title:** *Include the product name.*
+     - **Product Title:** *Include the product name.*
      - **Description:** *Briefly describe the product and its appeal.*
      - **Features and Details:** *List key features (e.g., color, size, price).*
      - **Product Link:** *Provide the formatted link.*
@@ -79,12 +79,13 @@ template = """
    - **Invite users to rate the suggestions** or provide comments to enhance future recommendations.
 
 ### 7. Tone and Style:
+
    - **Maintain a friendly, conversational tone** throughout.
    - Use **simple, easy-to-understand language.**
    - **Avoid jargon** and keep the conversation engaging.
 
 **Remember:** Keep the interaction smooth and adjust based on user feedback. Your main goal is to help the user find a delightful gift and make their shopping experience enjoyable.
-DO NOT PROVIDE RECOMMENDATIONS THAT ARE NOT AGE APPROPRIATE.
+DO NOT PROVIDE RECOMMENDATIONS THAT ARE NOT AGE APPROPRIATE. DO NOT RECOMMEND PRODUCTS THAT ARE NOT AVAILABLE IN THE RETAILER'S CATALOG.
 ---
 
 **Question:** {question}
@@ -145,6 +146,16 @@ if question:
         st.session_state.messages.append({"role":"user","content":question})
     with st.spinner("Gathering Recommendations..."):
         result = qa_chain({"query": question})
-    with st.chat_message("assistant"):
-        st.markdown(result["result"])
-        st.session_state.messages.append({"role":"assistant","content":result["result"]})
+    response_container = st.chat_message("assistant")
+    response = result["result"]
+    words = response.split(" ")
+    message_placeholder = response_container.empty()
+    streaming_message=""
+    for i,word in enumerate(words):
+        streaming_message+=word+" "
+        message_placeholder.markdown(streaming_message)
+        time.sleep(0.02)
+    # with st.chat_message("assistant"):
+    #     st.markdown(result["result"])
+    st.session_state.messages.append({"role":"assistant","content":response})
+    print(response)

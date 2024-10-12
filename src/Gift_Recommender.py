@@ -9,9 +9,7 @@ from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
 from langchain_huggingface import HuggingFaceEmbeddings
 
-# Necessary to use pysqlite3 instead of sqlite3 for streamlit deployment
-__import__('pysqlite3')
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 
 # Load environment variables
 load_dotenv()

@@ -1,3 +1,5 @@
+# 🎁 Gift Generative Recommendation System
+---
 ![banner.jpg](banner.jpg)
 
 ---
@@ -93,11 +95,11 @@ $ streamlit run src/Gift\ Recommender\ 🎁.py
 ├── 📁__pycache__/
 ├── 📁chroma_vectorstore/ # Contains the vector store
 ├── 📁Data/ # Contains the dataset
+├── └── 📓Data_Preprocessing.ipynb
 ├── 📁src/
-│   ├── 📄Gift Recommender 🎁.py
+│   ├── 🐍Gift Recommender 🎁.py
 │   ├── 📁pages/
-│   │   └── 📄Products Catalogue ⚙️.py
-│   └── 📄rag.ipynb
+│   │   └── 🐍Products Catalogue ⚙️.py
 ├── 📁tmp/
 ├── 📄.env
 ├── 📄.gitignore

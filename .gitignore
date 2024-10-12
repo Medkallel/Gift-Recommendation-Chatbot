@@ -163,4 +163,4 @@ cython_debug/
 #.idea/
 
 Data/
-chroma_vectorstore/
+chroma_vectorstore/*

@@ -118,7 +118,7 @@ if "retriever" not in st.session_state:
 if "llm" not in st.session_state:
     st.session_state.llm = ChatOpenAI(
         base_url="https://api.together.xyz/v1",
-        api_key=os.getenv("TOGETHER_API_KEY"),
+        api_key=st.secrets["TOGETHER_API_KEY"],
         model=LLM_MODEL_NAME,
     )
 

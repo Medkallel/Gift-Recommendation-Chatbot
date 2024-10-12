@@ -100,7 +100,9 @@ $ streamlit run src/Gift\ Recommender\ 🎁.py
 │   ├── 🐍Gift Recommender 🎁.py
 │   ├── 📁pages/
 │   │   └── 🐍Products Catalogue ⚙️.py
-├── 📁tmp/
+├── 📁tmp/ # Used to store temporary csv file for data embedding
+├── 📁.streamlit/
+│   └── 🔑secrets.toml # Used to store api Keys for running locally
 ├── 📄.env
 ├── 📄.gitignore
 ├── 📄README.md

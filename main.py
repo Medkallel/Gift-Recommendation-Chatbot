@@ -14,6 +14,7 @@ load_dotenv()
 
 st.set_page_config(page_icon="🎁", page_title="Gift Recommendation Assistant")
 
+# Prompt for the assistant
 PROMPT = """
 **You are an intelligent gift recommendation assistant** designed to help users find the perfect gifts based on their preferences, interests, and occasions. Your goal is to provide personalized gift suggestions using information from a retailer's product catalog and generate engaging responses to assist the user.
 
@@ -78,7 +79,8 @@ DO NOT PROVIDE RECOMMENDATIONS THAT ARE NOT AGE APPROPRIATE. DO NOT RECOMMEND PR
 
 """
 
-WELCOME_MESSAGE="""**Hello and welcome!** 🎁 
+# Welcome Message for the Assistant
+WELCOME_MESSAGE = """**Hello and welcome!** 🎁 
 
 I'm here to help you find the *perfect gift* for any occasion. Just tell me a bit about **who you're shopping for**, and I'll find some great ideas from our catalog. 
 
@@ -93,68 +95,99 @@ To get started, could you share a few details?
 - Is there a particular **price range** you're looking to stay within?
 
 """
-# Vector Store
-NB_RECOMMENDATIONS = 6 
-LLM_MODEL_NAME="meta-llama/Llama-Vision-Free"
+
+# Constants
+NB_RECOMMENDATIONS = 6  # Number of recommendations to return
+LLM_MODEL_NAME = "meta-llama/Llama-Vision-Free"
 EMBEDDINGS_MODEL_NAME = "multi-qa-mpnet-base-dot-v1"
 VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstore/"
 
+# Session State Initialization for Optimized Performance---------------------------------------------
+
+# Initialize retriever, vectorstore & embeddings model if not already in session state
 if "retriever" not in st.session_state:
-    # Embeddings
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDINGS_MODEL_NAME)
-    # Retrieval and Generation
-    vectorstore = Chroma(persist_directory=VECSTORE_PERSIST_DIRECTORY,embedding_function=embeddings)
-    st.session_state.retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={"k": NB_RECOMMENDATIONS})
+    vectorstore = Chroma(
+        persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings
+    )
+    st.session_state.retriever = vectorstore.as_retriever(
+        search_type="mmr", search_kwargs={"k": NB_RECOMMENDATIONS}
+    )
 
+# Initialize LLM model if not already in session state
 if "llm" not in st.session_state:
-    st.session_state.llm = ChatOpenAI(base_url="https://api.together.xyz/v1", api_key=os.getenv("TOGETHER_API_KEY"), model=LLM_MODEL_NAME)
+    st.session_state.llm = ChatOpenAI(
+        base_url="https://api.together.xyz/v1",
+        api_key=os.getenv("TOGETHER_API_KEY"),
+        model=LLM_MODEL_NAME,
+    )
 
+# Initialize memory if not already in session state
 if "memory" not in st.session_state:
-    st.session_state.memory= ConversationBufferMemory(
-    input_key="question",
-    memory_key="history",
-    return_messages=True,
-)
+    st.session_state.memory = ConversationBufferMemory(
+        input_key="question",
+        memory_key="history",
+        return_messages=True,
+    )
+# ---------------------------------------------------------------------------------------------------
 
 
+# QA Chain Initialization ---------------------------------------------------------------------------
+
+# Define the prompt template for the QA chain
 QA_CHAIN_PROMPT = PromptTemplate(
     input_variables=["history", "context", "question"],
     template=PROMPT,
 )
 
+# Initialize the QA chain with the language model, retriever, and memory
 qa_chain = RetrievalQA.from_chain_type(
     st.session_state.llm,
     retriever=st.session_state.retriever,
-    return_source_documents=True,
-    chain_type_kwargs={"prompt": QA_CHAIN_PROMPT, "verbose": True, "memory": st.session_state.memory}
+    return_source_documents=True, # Return source documents for the answer
+    chain_type_kwargs={
+        "prompt": QA_CHAIN_PROMPT,
+        "verbose": True,
+        "memory": st.session_state.memory,
+    },
 )
+# ---------------------------------------------------------------------------------------------------
 
 
+# Streamlit Chat App --------------------------------------------------------------------------------
 st.title("Gift Recommendation Assistant")
 
+# Initialize messages in session state if not already present
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    st.session_state.messages.append({"role":"assistant","content":WELCOME_MESSAGE})
+    st.session_state.messages.append({"role": "assistant", "content": WELCOME_MESSAGE})
 
+# Display chat messages history from session state
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# Handle user input and generate a response
 question = st.chat_input("Enter your question:")
 if question:
+    # Display user question in chat
     with st.chat_message("user"):
         st.markdown(question)
-        st.session_state.messages.append({"role":"user","content":question})
+        st.session_state.messages.append({"role": "user", "content": question})
+
+    # Show spinner while gathering recommendations and generating response
     with st.spinner("Gathering Recommendations..."):
         result = qa_chain({"query": question})
-    response_container = st.chat_message("assistant")
-    response = result["result"]
-    words = response.split(" ")
-    message_placeholder = response_container.empty()
-    streaming_message=""
-    for i,word in enumerate(words):
-        streaming_message+=word+" "
-        message_placeholder.markdown(streaming_message)
-        time.sleep(0.02)
-    st.session_state.messages.append({"role":"assistant","content":response})
-    print(response)
+    
+    # Display assistant's response with streaming effect
+    response_container = st.chat_message("assistant") # Placeholder for streaming response
+    response = result["result"] # Get the response from the QA chain
+    words = response.split(" ") # Split response into words for streaming effect
+    message_placeholder = response_container.empty() # Empty placeholder for streaming message
+    streaming_message = ""
+    for i, word in enumerate(words):
+        streaming_message += word + " " # Append word to streaming message
+        message_placeholder.markdown(streaming_message) # Display streaming message
+        time.sleep(0.02) # Add a delay for streaming effect
+    st.session_state.messages.append({"role": "assistant", "content": response}) # Add response to chat history
+# ---------------------------------------------------------------------------------------------------

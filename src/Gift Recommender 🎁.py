@@ -100,7 +100,7 @@ To get started, could you share a few details?
 NB_RECOMMENDATIONS = 6  # Number of recommendations to return
 LLM_MODEL_NAME = "meta-llama/Llama-Vision-Free"
 EMBEDDINGS_MODEL_NAME = "multi-qa-mpnet-base-dot-v1"
-VECSTORE_PERSIST_DIRECTORY = "./src/chroma_vectorstore"
+VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstore"
 
 # Session State Initialization for Optimized Performance---------------------------------------------
 

@@ -1,5 +1,3 @@
-# main.py
-
 import os
 import time
 import streamlit as st
@@ -16,28 +14,7 @@ load_dotenv()
 
 st.set_page_config(page_icon="🎁", page_title="Gift Recommendation Assistant")
 
-
-# Vector Store
-persist_directory = './chroma_vectorstore/'
-
-if "retriever" not in st.session_state:
-    # Embeddings
-    embeddings_model_name = "multi-qa-mpnet-base-dot-v1"
-    embeddings = HuggingFaceEmbeddings(model_name=embeddings_model_name)
-    # Retrieval and Generation
-    vectorstore = Chroma(persist_directory=persist_directory,embedding_function=embeddings)
-    st.session_state.retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={"k": 6})
-
-llm = ChatOpenAI(base_url="https://api.together.xyz/v1", api_key=os.getenv("TOGETHER_API_KEY"), model="meta-llama/Llama-Vision-Free")
-
-if "memory" not in st.session_state:
-    st.session_state.memory= ConversationBufferMemory(
-    input_key="question",
-    memory_key="history",
-    return_messages=True,
-)
-
-template = """
+PROMPT = """
 **You are an intelligent gift recommendation assistant** designed to help users find the perfect gifts based on their preferences, interests, and occasions. Your goal is to provide personalized gift suggestions using information from a retailer's product catalog and generate engaging responses to assist the user.
 
 ### 1. User Preferences:
@@ -46,6 +23,7 @@ template = """
 
 ### 2. Product Retrieval:
    - **Search the retailer's catalog** to find products matching the user’s criteria. 
+   - **Order recommendations** based on relevance to the gift reciever.
    - **Only recommend products** listed in the catalog. Avoid suggesting items not available in the retailer's database.
    - **Limit recommendations to 3 products** that best suit the recipient’s profile. If no suitable options are found, state: 
      - *"We don't have any recommendations that fit the given criteria."*
@@ -100,24 +78,7 @@ DO NOT PROVIDE RECOMMENDATIONS THAT ARE NOT AGE APPROPRIATE. DO NOT RECOMMEND PR
 
 """
 
-QA_CHAIN_PROMPT = PromptTemplate(
-    input_variables=["history", "context", "question"],
-    template=template,
-)
-
-qa_chain = RetrievalQA.from_chain_type(
-    llm,
-    retriever=st.session_state.retriever,
-    return_source_documents=True,
-    chain_type_kwargs={"prompt": QA_CHAIN_PROMPT, "verbose": True, "memory": st.session_state.memory}
-)
-
-# Streamlit Interface
-st.title("Gift Recommendation Assistant")
-
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-    welcome_message="""**Hello and welcome!** 🎁 
+WELCOME_MESSAGE="""**Hello and welcome!** 🎁 
 
 I'm here to help you find the *perfect gift* for any occasion. Just tell me a bit about **who you're shopping for**, and I'll find some great ideas from our catalog. 
 
@@ -132,9 +93,49 @@ To get started, could you share a few details?
 - Is there a particular **price range** you're looking to stay within?
 
 """
-    st.session_state.messages.append({"role":"assistant","content":welcome_message})
+# Vector Store
+NB_RECOMMENDATIONS = 6 
+LLM_MODEL_NAME="meta-llama/Llama-Vision-Free"
+EMBEDDINGS_MODEL_NAME = "multi-qa-mpnet-base-dot-v1"
+VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstore/"
 
-#if len(st.session_state.messages) > 1:
+if "retriever" not in st.session_state:
+    # Embeddings
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDINGS_MODEL_NAME)
+    # Retrieval and Generation
+    vectorstore = Chroma(persist_directory=VECSTORE_PERSIST_DIRECTORY,embedding_function=embeddings)
+    st.session_state.retriever = vectorstore.as_retriever(search_type="mmr", search_kwargs={"k": NB_RECOMMENDATIONS})
+
+if "llm" not in st.session_state:
+    st.session_state.llm = ChatOpenAI(base_url="https://api.together.xyz/v1", api_key=os.getenv("TOGETHER_API_KEY"), model=LLM_MODEL_NAME)
+
+if "memory" not in st.session_state:
+    st.session_state.memory= ConversationBufferMemory(
+    input_key="question",
+    memory_key="history",
+    return_messages=True,
+)
+
+
+QA_CHAIN_PROMPT = PromptTemplate(
+    input_variables=["history", "context", "question"],
+    template=PROMPT,
+)
+
+qa_chain = RetrievalQA.from_chain_type(
+    st.session_state.llm,
+    retriever=st.session_state.retriever,
+    return_source_documents=True,
+    chain_type_kwargs={"prompt": QA_CHAIN_PROMPT, "verbose": True, "memory": st.session_state.memory}
+)
+
+
+st.title("Gift Recommendation Assistant")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+    st.session_state.messages.append({"role":"assistant","content":WELCOME_MESSAGE})
+
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
@@ -155,7 +156,5 @@ if question:
         streaming_message+=word+" "
         message_placeholder.markdown(streaming_message)
         time.sleep(0.02)
-    # with st.chat_message("assistant"):
-    #     st.markdown(result["result"])
     st.session_state.messages.append({"role":"assistant","content":response})
     print(response)

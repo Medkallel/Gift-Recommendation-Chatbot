@@ -11,3 +11,4 @@ chroma-hnswlib==0.7.6
 huggingface-hub==0.25.2
 openai==1.51.2
 python-dotenv==1.0.1
+pysqlite3-binary==0.5.4

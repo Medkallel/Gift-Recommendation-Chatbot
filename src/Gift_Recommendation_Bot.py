@@ -104,7 +104,7 @@ To get started, could you share a few details?
 NB_RECOMMENDATIONS = 6  # Number of recommendations to return
 LLM_MODEL_NAME = "meta-llama/Llama-Vision-Free"
 EMBEDDINGS_MODEL_NAME = "togethercomputer/m2-bert-80M-2k-retrieval"
-VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstore/"
+VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstor/"
 
 # Session State Initialization for Optimized Performance---------------------------------------------
 
@@ -113,8 +113,6 @@ if "retriever" not in st.session_state:
     embeddings = TogetherEmbeddings(
         model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
     )
-    st.text(os.listdir("./chroma_vectorstore/"))
-    chromadb.api.client.SharedSystemClient.clear_system_cache()
     vectorstore = Chroma(
         persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings
     )

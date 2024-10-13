@@ -1,6 +1,7 @@
-__import__('pysqlite3')
+__import__("pysqlite3")
 import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import pysqlite3
 import time
 import streamlit as st
@@ -10,7 +11,7 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_huggingface import TogetherEmbeddings
 
 
 # Load environment variables
@@ -103,14 +104,16 @@ To get started, could you share a few details?
 # Constants
 NB_RECOMMENDATIONS = 6  # Number of recommendations to return
 LLM_MODEL_NAME = "meta-llama/Llama-Vision-Free"
-EMBEDDINGS_MODEL_NAME = "multi-qa-mpnet-base-dot-v1"
+EMBEDDINGS_MODEL_NAME = "togethercomputer/m2-bert-80M-2k-retrieval"
 VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstore"
 
 # Session State Initialization for Optimized Performance---------------------------------------------
 
 # Initialize retriever, vectorstore & embeddings model if not already in session state
 if "retriever" not in st.session_state:
-    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDINGS_MODEL_NAME)
+    embeddings = TogetherEmbeddings(
+        model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
+    )
     vectorstore = Chroma(
         persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings
     )
@@ -146,7 +149,7 @@ if "qa_chain" not in st.session_state:
     st.session_state.qa_chain = RetrievalQA.from_chain_type(
         st.session_state.llm,
         retriever=st.session_state.retriever,
-        return_source_documents=True, # Return source documents for the answer
+        return_source_documents=True,  # Return source documents for the answer
         chain_type_kwargs={
             "prompt": QA_CHAIN_PROMPT,
             "verbose": True,
@@ -180,16 +183,22 @@ if question:
     # Show spinner while gathering recommendations and generating response
     with st.spinner("Gathering Recommendations..."):
         result = st.session_state.qa_chain({"query": question})
-    
+
     # Display assistant's response with streaming effect
-    response_container = st.chat_message("assistant") # Placeholder for streaming response
-    response = result["result"] # Get the response from the QA chain
-    words = response.split(" ") # Split response into words for streaming effect
-    message_placeholder = response_container.empty() # Empty placeholder for streaming message
+    response_container = st.chat_message(
+        "assistant"
+    )  # Placeholder for streaming response
+    response = result["result"]  # Get the response from the QA chain
+    words = response.split(" ")  # Split response into words for streaming effect
+    message_placeholder = (
+        response_container.empty()
+    )  # Empty placeholder for streaming message
     streaming_message = ""
     for i, word in enumerate(words):
-        streaming_message += word + " " # Append word to streaming message
-        message_placeholder.markdown(streaming_message) # Display streaming message
-        time.sleep(0.02) # Add a delay for streaming effect
-    st.session_state.messages.append({"role": "assistant", "content": response}) # Add response to chat history
+        streaming_message += word + " "  # Append word to streaming message
+        message_placeholder.markdown(streaming_message)  # Display streaming message
+        time.sleep(0.02)  # Add a delay for streaming effect
+    st.session_state.messages.append(
+        {"role": "assistant", "content": response}
+    )  # Add response to chat history
 # ---------------------------------------------------------------------------------------------------

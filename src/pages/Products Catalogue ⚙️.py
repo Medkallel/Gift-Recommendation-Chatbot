@@ -8,7 +8,7 @@ import csv
 import time
 import streamlit as st
 from langchain_chroma import Chroma
-from langchain_huggingface import TogetherEmbeddings
+from langchain_together import TogetherEmbeddings
 from langchain_community.document_loaders import CSVLoader
 
 

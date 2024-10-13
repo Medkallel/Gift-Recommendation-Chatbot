@@ -11,7 +11,7 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
-from langchain_huggingface import TogetherEmbeddings
+from langchain_together import TogetherEmbeddings
 
 
 # Load environment variables

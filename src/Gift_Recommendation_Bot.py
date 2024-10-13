@@ -1,8 +1,8 @@
 __import__("pysqlite3")
 import sys
-import os
 sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import pysqlite3
+import os
 import time
 import streamlit as st
 from langchain_chroma import Chroma

@@ -104,7 +104,7 @@ To get started, could you share a few details?
 NB_RECOMMENDATIONS = 6  # Number of recommendations to return
 LLM_MODEL_NAME = "meta-llama/Llama-Vision-Free"
 EMBEDDINGS_MODEL_NAME = "togethercomputer/m2-bert-80M-2k-retrieval"
-VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstor/"
+VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstore/"
 
 # Session State Initialization for Optimized Performance---------------------------------------------
 

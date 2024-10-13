@@ -38,7 +38,7 @@ def load_and_store_embedded_documents(
 
     # Embeddings
     embeddings = TogetherEmbeddings(
-        model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
+        model=embeddings_model_name, api_key=st.secrets["TOGETHER_API_KEY"]
     )
     # Vectorstore
     vectorstore = Chroma.from_documents(

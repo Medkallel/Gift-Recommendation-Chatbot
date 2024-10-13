@@ -4,6 +4,7 @@ sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import pysqlite3
 import os
 import time
+import requests
 import streamlit as st
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
@@ -105,6 +106,21 @@ NB_RECOMMENDATIONS = 6  # Number of recommendations to return
 LLM_MODEL_NAME = "meta-llama/Llama-Vision-Free"
 EMBEDDINGS_MODEL_NAME = "togethercomputer/m2-bert-80M-2k-retrieval"
 VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstore/"
+CHROMA_SQLITE3= "https://www.dropbox.com/scl/fi/s6my6z3legim0mmovbgb1/chroma.sqlite3?rlkey=75frr1c1vyea77atfesyothbh&st=kbij4gd0&dl=1"
+CHROMA_SUBDIR_NAME="bcbdf01a-5fe8-4eea-9e53-85e1ad37ebba"
+VECTORSTORE_LINKS={
+    "data_level0.bin":"https://www.dropbox.com/scl/fi/gtjpttqgoma2ok6smmttf/data_level0.bin?rlkey=v8dqe1tm30w8jsophp745z0xi&st=xijs684b&dl=1",
+    "header.bin":"https://www.dropbox.com/scl/fi/lr0mtb4dfg4hus4dg3kjz/header.bin?rlkey=tybmt4tl6rng84zn76bz3q29b&st=o0mgdnem&dl=1",
+    "index_metadata.pickle":"https://www.dropbox.com/scl/fi/nx7s31owgal3t5y8xqm2b/index_metadata.pickle?rlkey=sp24230gplzkl2gvv3tjp5w30&st=zowvjr5h&dl=1",
+    "length.bin":"https://www.dropbox.com/scl/fi/0cmroajhvtaadw10loznd/length.bin?rlkey=3mplircu4673zynny9mtcg0s2&st=ykun4ud6&dl=1",
+    "link_lists.bin":"https://www.dropbox.com/scl/fi/flzr936ccqq3rzrhf846i/link_lists.bin?rlkey=lttap1azqmnl8qjdw7o78j7u4&st=3degrlcg&dl=1"
+    
+}
+
+def download_file (path,url):
+    r = requests.get(url, allow_redirects=True)
+    open(path, 'wb').write(r.content)
+    del r
 
 # Session State Initialization for Optimized Performance---------------------------------------------
 
@@ -113,6 +129,13 @@ if "retriever" not in st.session_state:
     embeddings = TogetherEmbeddings(
         model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
     )
+    if not os.path.exists(VECSTORE_PERSIST_DIRECTORY):
+        os.makedirs(VECSTORE_PERSIST_DIRECTORY)
+    if not os.path.exists(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME):
+        os.makedirs(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME)
+    download_file(VECSTORE_PERSIST_DIRECTORY+"/chroma.sqlite3",CHROMA_SQLITE3)
+    for key in VECTORSTORE_LINKS:
+        download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+key,VECTORSTORE_LINKS[key])
     vectorstore = Chroma(
         persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings
     )

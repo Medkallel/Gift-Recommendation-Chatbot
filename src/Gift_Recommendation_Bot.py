@@ -5,7 +5,6 @@ sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import pysqlite3
 import time
 import streamlit as st
-from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.chains import RetrievalQA
@@ -16,8 +15,6 @@ from langchain_together import TogetherEmbeddings
 import chromadb
 chromadb.api.client.SharedSystemClient.clear_system_cache()
 
-# Load environment variables
-load_dotenv()
 
 st.set_page_config(page_icon="🎁", page_title="Gift Recommendation Assistant")
 

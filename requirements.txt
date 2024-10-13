@@ -6,3 +6,4 @@ langchain==0.3.3
 chromadb==0.5.13
 langchain_together==0.2.0
 langchain_community==0.3.2
+protobuf==3.20.3

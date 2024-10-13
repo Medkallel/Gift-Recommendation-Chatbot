@@ -9,6 +9,7 @@
 -   [Technologies Used](#technologies-used)
 -   [Description](#description)
 -   [Objectives](#objectives)
+-   [Demo](#demo)
 -   [Notebooks Overview](#notebooks-overview)
 -   [Installation](#installation)
 -   [Usage](#usage)
@@ -41,6 +42,13 @@ The main goal is to develop a **Proof Of Concept** that is could be used by a cu
 The dataset used, compiled by McAuley Lab in 2023, encompasses a comprehensive collection of Amazon Reviews. It features:
 - User Reviews (ratings, text, helpfulness votes, etc.)
 - Item Metadata (descriptions, price, raw image, etc.)
+
+---
+
+## Demo
+##### The app demo is hosted & available on the following link: [Demo Link](https://gift-recommendation-chatbot.streamlit.app/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://gift-recommendation-chatbot.streamlit.app/)
+
 
 ---
 <!-- 

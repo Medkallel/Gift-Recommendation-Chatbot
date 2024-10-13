@@ -12,8 +12,8 @@ from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
 from langchain_together import TogetherEmbeddings
 
-import chromadb
-chromadb.api.client.SharedSystemClient.clear_system_cache()
+#import chromadb
+#chromadb.api.client.SharedSystemClient.clear_system_cache()
 
 
 st.set_page_config(page_icon="🎁", page_title="Gift Recommendation Assistant")

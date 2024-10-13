@@ -13,6 +13,8 @@ from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
 from langchain_together import TogetherEmbeddings
 
+import chromadb
+chromadb.api.client.SharedSystemClient.clear_system_cache()
 
 # Load environment variables
 load_dotenv()

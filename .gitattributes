@@ -1,0 +1,2 @@
+chroma_vectorstore/chroma.sqlite3 filter=lfs diff=lfs merge=lfs -text
+chroma_vectorstore/bcbdf01a-5fe8-4eea-9e53-85e1ad37ebba/data_level0.bin filter=lfs diff=lfs merge=lfs -text

@@ -1,6 +1,6 @@
 __import__("pysqlite3")
 import sys
-
+import os
 sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import pysqlite3
 import time
@@ -116,6 +116,7 @@ if "retriever" not in st.session_state:
     embeddings = TogetherEmbeddings(
         model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
     )
+    os.write(os.listdir())
     vectorstore = Chroma(
         persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings
     )

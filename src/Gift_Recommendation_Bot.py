@@ -4,6 +4,7 @@ sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import pysqlite3
 import os
 import time
+import shutil
 import requests
 import streamlit as st
 from langchain_chroma import Chroma
@@ -129,6 +130,7 @@ if "retriever" not in st.session_state:
     embeddings = TogetherEmbeddings(
         model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
     )
+    shutil.rmtree(VECSTORE_PERSIST_DIRECTORY)
     st.write(os.listdir())
     # if not os.path.exists(VECSTORE_PERSIST_DIRECTORY):
     #     os.makedirs(VECSTORE_PERSIST_DIRECTORY)

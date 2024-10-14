@@ -10,6 +10,7 @@
 -   [Description](#description)
 -   [Objectives](#objectives)
 -   [Demo](#demo)
+<!-- -   [Presentation](#presentation) -->
 -   [Notebooks Overview](#notebooks-overview)
 -   [Using Docker](#using-docker)
 -   [Installation](#installation)
@@ -17,7 +18,6 @@
 -   [Project Structure](#project-structure)
 -   [Collaborators](#collaborators)
 -   [License](#license)
-<!-- -   [Presentation](#presentation) -->
 
 ---
 
@@ -45,6 +45,8 @@ The dataset used, compiled by McAuley Lab in 2023, encompasses a comprehensive c
 - Item Metadata (descriptions, price, raw image, etc.)
 
 ---
+> [!IMPORTANT]
+> **Disclaimer:** The source code as well as the demo currently use **free** embedidng and llm models provided by TogetherAI. Those models are thus **not performant** and generally do not offer great recommendations. It is **recommended** to switch to higher performance models like those from OpenAI, Anthropic... or capable Local models to get better results. An up to date more refined **product database** would also contribute to getting better results as the database contains rather "random" results
 
 ## Demo
 ##### The app demo is hosted & available on the following link: [Demo Link](https://gift-recommendation-chatbot.streamlit.app/)
@@ -55,7 +57,7 @@ The dataset used, compiled by McAuley Lab in 2023, encompasses a comprehensive c
 
 
 ---
-<!-- 
+<!--
 ## Presentation
 
 A **presentation** is available as a **PDF** file in the repo `Gift_Recommendation_Presentation.pdf` & also as a **Canva/Powerpoint** presentation through the following link: [Presentation Link](https://www.canva.com/design/DAGPvK0-A2g/1DJtvrzpoxdP5VG_GcgkhA/view?utm_content=DAGPvK0-A2g&utm_campaign=designshare&utm_medium=link&utm_source=editor).
@@ -96,7 +98,7 @@ $ docker run -p 8501:8501 gift-recommendation-chatbot
 ---
 
 ---
-
+## Installation
 > [!IMPORTANT]
 > The project was developed and tested on Python 3.11.6
 
@@ -135,7 +137,8 @@ $ streamlit run src/Gift_Recommendation_Bot.py
 ## Project structure
 ```sh
 📦 Gift-Recommendation-ChatBot/
-├── 📁__pycache__/
+├── 📁.github/workflows
+│   └── 🤖github-docker-cicd.yaml # Used for CI/CD workflows
 ├── 📁chroma_vectorstore/ # Contains the vector store
 ├── 📁Data/ # Contains the dataset
 ├── └── 📓create_llm_ready_csv.ipynb
@@ -147,7 +150,10 @@ $ streamlit run src/Gift_Recommendation_Bot.py
 ├── 📁.streamlit/
 │   └── 🔑secrets.toml # Used to store api Keys for running locally
 ├── 📄.gitignore
+├── 🐋.dockerignore
+├── 🐋.Dockerfile
 ├── 📄README.md
+├── 📄LICENCE.md
 ├── 📄requirements.txt
 └── 🖼️banner.png
 ```

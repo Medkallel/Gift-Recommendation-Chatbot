@@ -63,7 +63,7 @@ A **presentation** is available as a **PDF** file in the repo `Gift_Recommendati
 
 ## Notebooks Overview
 
-1. **DataPreprocessing.ipynb**:
+1. **create_llm_ready_csv.ipynb**:
    - Used to preprocess the Amazon Dataset and extract products with rich text features for the demo.
 
 ---
@@ -82,8 +82,11 @@ $ cd Gift-Recommendation-ChatBot
 ```sh
 $ pip install -r requirements.txt
 ```
+3. Download the Chroma VecStore & upload it to your Dropbox App:
+   [Chroma Store Download Link](https://drive.google.com/drive/folders/1zateQgEBTLoUUb5tSdLyBJIF57wermxC?usp=drive_link)
+
 > [!IMPORTANT]
-> Ensure you have the necessary API keys for TogetherAI set up in a `.env` file.
+> Ensure you have the necessary API keys for TogetherAI and Dropbox set up in the `secrets.toml` file.
 
 ---
 
@@ -106,7 +109,7 @@ $ streamlit run src/Gift\ Recommendation\ Bot\ 🎁.py
 ├── 📁__pycache__/
 ├── 📁chroma_vectorstore/ # Contains the vector store
 ├── 📁Data/ # Contains the dataset
-├── └── 📓Data_Preprocessing.ipynb
+├── └── 📓create_llm_ready_csv.ipynb
 ├── 📁src/
 │   ├── 🐍Gift Recommendation Bot 🎁.py
 │   ├── 📁pages/
@@ -114,7 +117,6 @@ $ streamlit run src/Gift\ Recommendation\ Bot\ 🎁.py
 ├── 📁tmp/ # Used to store temporary csv file for data embedding
 ├── 📁.streamlit/
 │   └── 🔑secrets.toml # Used to store api Keys for running locally
-├── 📄.env
 ├── 📄.gitignore
 ├── 📄README.md
 ├── 📄requirements.txt

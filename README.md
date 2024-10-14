@@ -82,8 +82,11 @@ $ cd Gift-Recommendation-ChatBot
 ```sh
 $ pip install -r requirements.txt
 ```
+3. Download the Chroma VecStore & upload it to your Dropbox App:
+   [Chroma Store Download Link](https://drive.google.com/drive/folders/1zateQgEBTLoUUb5tSdLyBJIF57wermxC?usp=drive_link)
+
 > [!IMPORTANT]
-> Ensure you have the necessary API keys for TogetherAI set up in a `.env` file.
+> Ensure you have the necessary API keys for TogetherAI and Dropbox set up in the `secrets.toml` file.
 
 ---
 
@@ -114,7 +117,6 @@ $ streamlit run src/Gift\ Recommendation\ Bot\ 🎁.py
 ├── 📁tmp/ # Used to store temporary csv file for data embedding
 ├── 📁.streamlit/
 │   └── 🔑secrets.toml # Used to store api Keys for running locally
-├── 📄.env
 ├── 📄.gitignore
 ├── 📄README.md
 ├── 📄requirements.txt

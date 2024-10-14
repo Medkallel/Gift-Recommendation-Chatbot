@@ -11,8 +11,8 @@ from langchain_chroma import Chroma
 from langchain_together import TogetherEmbeddings
 from langchain_community.document_loaders import CSVLoader
 
-#import chromadb
-#chromadb.api.client.SharedSystemClient.clear_system_cache()
+import chromadb
+chromadb.api.client.SharedSystemClient.clear_system_cache()
 
 st.set_page_config(page_icon="🎁", page_title="Gift Recommendation Assistant")
 

@@ -6,6 +6,7 @@ import os
 import time
 import shutil
 import requests
+import concurrent.futures
 import streamlit as st
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
@@ -129,18 +130,30 @@ if "retriever" not in st.session_state:
     embeddings = TogetherEmbeddings(
         model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
     )
-    try:
+    if os.path.exists(VECSTORE_PERSIST_DIRECTORY):
         shutil.rmtree(VECSTORE_PERSIST_DIRECTORY)
-    except:
-        pass
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY)
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME)
+    
+    def download_file_wrapper(file_path, url):
+    download_file(file_path, url)
+
     with st.spinner("Downloading Product Catalogue..."):
-        download_file(VECSTORE_PERSIST_DIRECTORY+"/chroma.sqlite3",CHROMA_SQLITE3)
-        for key in VECTORSTORE_LINKS:
-            download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+key,VECTORSTORE_LINKS[key])
+        # Use ThreadPoolExecutor to download chroma.sqlite3 and VECTORSTORE_LINKS concurrently
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Submit the chroma.sqlite3 download task
+            futures = [
+                executor.submit(download_file_wrapper, VECSTORE_PERSIST_DIRECTORY + "/chroma.sqlite3", CHROMA_SQLITE3)
+            ]
+            # Submit the VECTORSTORE_LINKS download tasks
+            futures.extend([
+                executor.submit(download_file_wrapper, VECSTORE_PERSIST_DIRECTORY + CHROMA_SUBDIR_NAME + "/" + key, VECTORSTORE_LINKS[key])
+                for key in VECTORSTORE_LINKS
+            ])
+            # Wait for all futures to complete
+            concurrent.futures.wait(futures)
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY))
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME))
     chromadb.api.client.SharedSystemClient.clear_system_cache()

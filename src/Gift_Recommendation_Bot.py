@@ -111,7 +111,7 @@ CHROMA_SUBDIR_NAME="bcbdf01a-5fe8-4eea-9e53-85e1ad37ebba"
 VECTORSTORE_LINKS=[
     "chroma.sqlite3",
     "data_level0.bin",
-    "header.bin"
+    "header.bin",
     "index_metadata.pickle",
     "length.bin",
     "link_lists.bin"]
@@ -137,10 +137,11 @@ if "retriever" not in st.session_state:
         os.makedirs(VECSTORE_PERSIST_DIRECTORY)
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME)
+    print(VECTORSTORE_LINKS[1:])
     with st.spinner("Downloading Product Catalogue..."):
-        download_file(VECSTORE_PERSIST_DIRECTORY+VECTORSTORE_LINKS[0],DROPBOX_DIR+VECTORSTORE_LINKS[0])
         for item in VECTORSTORE_LINKS[1:]:
             download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+item,DROPBOX_DIR+item)
+        download_file(VECSTORE_PERSIST_DIRECTORY+VECTORSTORE_LINKS[0],DROPBOX_DIR+VECTORSTORE_LINKS[0])
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY))
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME))
     chromadb.api.client.SharedSystemClient.clear_system_cache()

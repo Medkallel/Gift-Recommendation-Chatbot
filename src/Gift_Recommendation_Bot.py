@@ -138,7 +138,7 @@ if "retriever" not in st.session_state:
         os.makedirs(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME)
     
     def download_file_wrapper(file_path, url):
-    download_file(file_path, url)
+        download_file(file_path, url)
 
     with st.spinner("Downloading Product Catalogue..."):
         # Use ThreadPoolExecutor to download chroma.sqlite3 and VECTORSTORE_LINKS concurrently

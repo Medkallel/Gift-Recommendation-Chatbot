@@ -123,10 +123,10 @@ $ pip install -r requirements.txt
 
 1. **Run the app** using:
 ```sh
-$ streamlit run src/Gift\ Recommendation\ Bot\ 🎁.py 
+$ streamlit run src/Gift_Recommendation_Bot.py 
 ```
 2. **Use the `Products Catalogue ⚙️`** script to upload and embed product data.
-3. **Use the `Gift Recommendation Bot 🎁`** script to start the chatbot interface and get gift recommendations.
+3. **Use the `Gift Recommendation Bot`** script to start the chatbot interface and get gift recommendations.
 
 > **TIP:** The embedding process may take a while depending on the size of the CSV file. Please be patient.
 
@@ -140,7 +140,7 @@ $ streamlit run src/Gift\ Recommendation\ Bot\ 🎁.py
 ├── 📁Data/ # Contains the dataset
 ├── └── 📓create_llm_ready_csv.ipynb
 ├── 📁src/
-│   ├── 🐍Gift Recommendation Bot 🎁.py
+│   ├── 🐍Gift_Recommendation_Bot.py 
 │   ├── 📁pages/
 │   │   └── 🐍Products Catalogue ⚙️.py
 ├── 📁tmp/ # Used to store temporary csv file for data embedding

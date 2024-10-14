@@ -15,7 +15,6 @@ from langchain.memory import ConversationBufferMemory
 from langchain_together import TogetherEmbeddings
 
 import chromadb
-chromadb.api.client.SharedSystemClient.clear_system_cache()
 
 
 st.set_page_config(page_icon="🎁", page_title="Gift Recommendation Assistant")
@@ -144,6 +143,7 @@ if "retriever" not in st.session_state:
             download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+key,VECTORSTORE_LINKS[key])
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY))
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME))
+    chromadb.api.client.SharedSystemClient.clear_system_cache()
     vectorstore = Chroma(
         persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings
     )

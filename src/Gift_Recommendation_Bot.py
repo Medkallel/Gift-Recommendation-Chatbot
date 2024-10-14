@@ -1,5 +1,6 @@
 __import__("pysqlite3")
 import sys
+
 sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import pysqlite3
 import os
@@ -104,28 +105,32 @@ To get started, could you share a few details?
 """
 
 # Constants
-try: TOGETHER_API_KEY =  st.secrets["TOGETHER_API_KEY"] # For Streamlit Deployment
-except: TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY") # For Docker Container
+try:
+    TOGETHER_API_KEY = st.secrets["TOGETHER_API_KEY"]  # For Streamlit Deployment
+except:
+    TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")  # For Docker Container
 NB_RECOMMENDATIONS = 6  # Number of recommendations to return
 LLM_MODEL_NAME = "meta-llama/Llama-Vision-Free"
 EMBEDDINGS_MODEL_NAME = "togethercomputer/m2-bert-80M-2k-retrieval"
 VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstore/"
-DROPBOX_DIR= "/Gift_Recommendation_Bot/"
-CHROMA_SUBDIR_NAME="bcbdf01a-5fe8-4eea-9e53-85e1ad37ebba"
-VECTORSTORE_LINKS=[
+DROPBOX_DIR = "/Gift_Recommendation_Bot/"
+CHROMA_SUBDIR_NAME = "bcbdf01a-5fe8-4eea-9e53-85e1ad37ebba"
+VECTORSTORE_LINKS = [
     "chroma.sqlite3",
     "data_level0.bin",
     "header.bin",
     "index_metadata.pickle",
     "length.bin",
-    "link_lists.bin"]
+    "link_lists.bin",
+]
 
 
-def download_file(dbx,local_path,dropbox_path):
+def download_file(dbx, local_path, dropbox_path):
     # Download the file to the local path
     with open(local_path, "wb") as f:
         metadata, res = dbx.files_download(path=dropbox_path)
         f.write(res.content)
+
 
 # Session State Initialization for Optimized Performance---------------------------------------------
 
@@ -139,15 +144,27 @@ if "retriever" not in st.session_state:
         shutil.rmtree(VECSTORE_PERSIST_DIRECTORY)
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY)
-    if not os.path.exists(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME):
-        os.makedirs(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME)
+    if not os.path.exists(VECSTORE_PERSIST_DIRECTORY + CHROMA_SUBDIR_NAME):
+        os.makedirs(VECSTORE_PERSIST_DIRECTORY + CHROMA_SUBDIR_NAME)
 
     with st.spinner("Downloading Product Catalogue..."):
         # Initialize a Dropbox object using the access token
-        dbx = dropbox.Dropbox(app_key="h1rydmpe9u1bhq4", app_secret="n16co7zujixestu", oauth2_refresh_token="sJZIXhr8q50AAAAAAAAAAXRwzMpXObsfFGdiXKB6P6wn46HgcbZ2fBD6DLeXX1Ny")
+        dbx = dropbox.Dropbox(
+            app_key="h1rydmpe9u1bhq4",
+            app_secret="n16co7zujixestu",
+            oauth2_refresh_token="sJZIXhr8q50AAAAAAAAAAXRwzMpXObsfFGdiXKB6P6wn46HgcbZ2fBD6DLeXX1Ny",
+        )
         for item in VECTORSTORE_LINKS[1:]:
-            download_file(dbx,VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+item,DROPBOX_DIR+item)
-        download_file(dbx,VECSTORE_PERSIST_DIRECTORY+VECTORSTORE_LINKS[0],DROPBOX_DIR+VECTORSTORE_LINKS[0])
+            download_file(
+                dbx,
+                VECSTORE_PERSIST_DIRECTORY + CHROMA_SUBDIR_NAME + "/" + item,
+                DROPBOX_DIR + item,
+            )
+        download_file(
+            dbx,
+            VECSTORE_PERSIST_DIRECTORY + VECTORSTORE_LINKS[0],
+            DROPBOX_DIR + VECTORSTORE_LINKS[0],
+        )
     chromadb.api.client.SharedSystemClient.clear_system_cache()
     vectorstore = Chroma(
         persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings

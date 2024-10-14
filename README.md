@@ -11,6 +11,7 @@
 -   [Objectives](#objectives)
 -   [Demo](#demo)
 -   [Notebooks Overview](#notebooks-overview)
+-   [Using Docker](#using-docker)
 -   [Installation](#installation)
 -   [Usage](#usage)
 -   [Project Structure](#project-structure)
@@ -65,6 +66,34 @@ A **presentation** is available as a **PDF** file in the repo `Gift_Recommendati
 
 1. **create_llm_ready_csv.ipynb**:
    - Used to preprocess the Amazon Dataset and extract products with rich text features for the demo.
+
+---
+
+## Using Docker
+
+#### 1. Pulling the Docker Image
+You can pull the docker image from Docker Hub or Github Packages
+To pull the Docker image from Docker Hub, run the following command:
+```sh
+# Pull the docker image
+$ docker pull medkallel/gift-recommendation-chatbot:latest
+```
+#### 2. Building the Docker Image
+If you prefer to build the Docker image locally, navigate to the project directory and run:
+
+```sh
+# Build the docker image
+$ docker build -t gift-recommendation-chatbot .
+```
+#### 3. Running the Docker Container
+To run the Docker container, use the following command:
+```sh
+# Run the docker container
+$ docker run -p 8501:8501 gift-recommendation-chatbot
+```
+> [!TIP] 
+> You can access the app on another device by following the link: ```http://<server-ip>:8501```
+---
 
 ---
 

@@ -1,6 +1,7 @@
 __import__("pysqlite3")
 import sys
 import time
+
 sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 import pysqlite3
 import os
@@ -12,6 +13,7 @@ from langchain_together import TogetherEmbeddings
 from langchain_community.document_loaders import CSVLoader
 
 import chromadb
+
 chromadb.api.client.SharedSystemClient.clear_system_cache()
 
 st.set_page_config(page_icon="🎁", page_title="Gift Recommendation Assistant")
@@ -57,21 +59,23 @@ def load_and_store_embedded_documents(
             embedding=embeddings,
             persist_directory=VECSTORE_PERSIST_DIRECTORY,
         )
-        
+
         # Update the progress bar
         progress_bar.progress((idx + 1) / total_docs)
-        
+
         # Calculate elapsed time and documents per second
         elapsed_time = time.time() - start_time
         docs_per_sec = (idx + 1) / elapsed_time
         remaining_docs = total_docs - (idx + 1)
-        estimated_time_remaining = remaining_docs / docs_per_sec if docs_per_sec > 0 else float('inf')
-        
+        estimated_time_remaining = (
+            remaining_docs / docs_per_sec if docs_per_sec > 0 else float("inf")
+        )
+
         # Convert estimated time remaining to hh:mm:ss format
         hrs, rem = divmod(estimated_time_remaining, 3600)
         mins, secs = divmod(rem, 60)
         time_remaining_str = f"{int(hrs):02}:{int(mins):02}:{int(secs):02}"
-        
+
         # Update the status text
         status_text.text(
             f"Processing document {idx + 1}/{total_docs} "

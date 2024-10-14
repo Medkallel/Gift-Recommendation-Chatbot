@@ -63,7 +63,7 @@ A **presentation** is available as a **PDF** file in the repo `Gift_Recommendati
 
 ## Notebooks Overview
 
-1. **DataPreprocessing.ipynb**:
+1. **create_llm_ready_csv.ipynb**:
    - Used to preprocess the Amazon Dataset and extract products with rich text features for the demo.
 
 ---
@@ -109,7 +109,7 @@ $ streamlit run src/Gift\ Recommendation\ Bot\ 🎁.py
 ├── 📁__pycache__/
 ├── 📁chroma_vectorstore/ # Contains the vector store
 ├── 📁Data/ # Contains the dataset
-├── └── 📓Data_Preprocessing.ipynb
+├── └── 📓create_llm_ready_csv.ipynb
 ├── 📁src/
 │   ├── 🐍Gift Recommendation Bot 🎁.py
 │   ├── 📁pages/

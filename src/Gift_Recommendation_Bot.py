@@ -142,8 +142,6 @@ if "retriever" not in st.session_state:
         for item in VECTORSTORE_LINKS[1:]:
             download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+item,DROPBOX_DIR+item)
         download_file(VECSTORE_PERSIST_DIRECTORY+VECTORSTORE_LINKS[0],DROPBOX_DIR+VECTORSTORE_LINKS[0])
-    st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY))
-    st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME))
     chromadb.api.client.SharedSystemClient.clear_system_cache()
     vectorstore = Chroma(
         persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings

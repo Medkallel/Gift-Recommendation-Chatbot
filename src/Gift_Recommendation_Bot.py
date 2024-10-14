@@ -136,11 +136,10 @@ def download_file(dbx,local_path,dropbox_path):
 
 # Initialize retriever, vectorstore & embeddings model if not already in session state
 if "retriever" not in st.session_state:
-    st.text("TOGETHER_API_KEY: "+TOGETHER_API_KEY)
     embeddings = TogetherEmbeddings(
         model=EMBEDDINGS_MODEL_NAME, api_key=TOGETHER_API_KEY
     )
-    
+
     if os.path.exists(VECSTORE_PERSIST_DIRECTORY):
         shutil.rmtree(VECSTORE_PERSIST_DIRECTORY)
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY):

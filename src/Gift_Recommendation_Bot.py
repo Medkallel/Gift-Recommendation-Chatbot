@@ -120,11 +120,6 @@ VECTORSTORE_LINKS=[
     "length.bin",
     "link_lists.bin"]
 
-# Function to get a new access token using the refresh token
-def get_access_token(app_key="h1rydmpe9u1bhq4", app_secret="n16co7zujixestu", refresh_token="sJZIXhr8q50AAAAAAAAAAXRwzMpXObsfFGdiXKB6P6wn46HgcbZ2fBD6DLeXX1Ny"):
-    oauth_flow = dropbox.DropboxOAuth2FlowNoRedirect(app_key, app_secret, token_access_type='offline')
-    oauth_result = oauth_flow.refresh_access_token(refresh_token)
-    return oauth_result.access_token
 
 def download_file(dbx,local_path,dropbox_path):
     # Download the file to the local path
@@ -149,7 +144,7 @@ if "retriever" not in st.session_state:
 
     with st.spinner("Downloading Product Catalogue..."):
         # Initialize a Dropbox object using the access token
-        dbx = dropbox.Dropbox(get_access_token())
+        dbx = dropbox.Dropbox(app_key="h1rydmpe9u1bhq4", app_secret="n16co7zujixestu", oauth2_refresh_token="sJZIXhr8q50AAAAAAAAAAXRwzMpXObsfFGdiXKB6P6wn46HgcbZ2fBD6DLeXX1Ny")
         for item in VECTORSTORE_LINKS[1:]:
             download_file(dbx,VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+item,DROPBOX_DIR+item)
         download_file(dbx,VECSTORE_PERSIST_DIRECTORY+VECTORSTORE_LINKS[0],DROPBOX_DIR+VECTORSTORE_LINKS[0])

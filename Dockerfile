@@ -13,4 +13,6 @@ LABEL org.opencontainers.image.source https://github.com/Medkallel/Gift-Recommen
 RUN pip install --no-cache-dir --upgrade pip &&\
     pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt
 
+EXPOSE 8501
+
 CMD python -m streamlit run /app/src/Gift_Recommendation_Bot.py

@@ -89,9 +89,10 @@ $ docker build -t gift-recommendation-chatbot .
 To run the Docker container, use the following command:
 ```sh
 # Run the docker container
-$ docker run -p 8501:8501 gift-recommendation-chatbot
+$ docker run -p 8501:8501 -e TOGETHER_API_KEY=<your_api_key_here> gift-recommendation-chatbot
 ```
 > [!TIP] 
+> Do not forget to add your TogetherAI api key
 > You can access the app on another device by following the link: ```http://<server-ip>:8501```
 ---
 

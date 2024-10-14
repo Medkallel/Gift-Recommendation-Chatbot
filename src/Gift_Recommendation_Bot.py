@@ -136,6 +136,8 @@ if "retriever" not in st.session_state:
     download_file(VECSTORE_PERSIST_DIRECTORY+"/chroma.sqlite3",CHROMA_SQLITE3)
     for key in VECTORSTORE_LINKS:
         download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+key,VECTORSTORE_LINKS[key])
+    st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY))
+    st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME))
     vectorstore = Chroma(
         persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings
     )

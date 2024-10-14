@@ -129,6 +129,7 @@ if "retriever" not in st.session_state:
     embeddings = TogetherEmbeddings(
         model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
     )
+    st.write(os.listdir())
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY)
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME):

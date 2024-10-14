@@ -5,8 +5,7 @@ import pysqlite3
 import os
 import time
 import shutil
-import requests
-import concurrent.futures
+import dropbox
 import streamlit as st
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
@@ -107,21 +106,23 @@ NB_RECOMMENDATIONS = 6  # Number of recommendations to return
 LLM_MODEL_NAME = "meta-llama/Llama-Vision-Free"
 EMBEDDINGS_MODEL_NAME = "togethercomputer/m2-bert-80M-2k-retrieval"
 VECSTORE_PERSIST_DIRECTORY = "./chroma_vectorstore/"
-CHROMA_SQLITE3= "https://www.dropbox.com/scl/fi/s6my6z3legim0mmovbgb1/chroma.sqlite3?rlkey=75frr1c1vyea77atfesyothbh&st=kbij4gd0&dl=1"
+DROPBOX_DIR= "/Gift_Recommendation_Bot/"
 CHROMA_SUBDIR_NAME="bcbdf01a-5fe8-4eea-9e53-85e1ad37ebba"
-VECTORSTORE_LINKS={
-    "data_level0.bin":"https://www.dropbox.com/scl/fi/gtjpttqgoma2ok6smmttf/data_level0.bin?rlkey=v8dqe1tm30w8jsophp745z0xi&st=xijs684b&dl=1",
-    "header.bin":"https://www.dropbox.com/scl/fi/lr0mtb4dfg4hus4dg3kjz/header.bin?rlkey=tybmt4tl6rng84zn76bz3q29b&st=o0mgdnem&dl=1",
-    "index_metadata.pickle":"https://www.dropbox.com/scl/fi/nx7s31owgal3t5y8xqm2b/index_metadata.pickle?rlkey=sp24230gplzkl2gvv3tjp5w30&st=zowvjr5h&dl=1",
-    "length.bin":"https://www.dropbox.com/scl/fi/0cmroajhvtaadw10loznd/length.bin?rlkey=3mplircu4673zynny9mtcg0s2&st=ykun4ud6&dl=1",
-    "link_lists.bin":"https://www.dropbox.com/scl/fi/flzr936ccqq3rzrhf846i/link_lists.bin?rlkey=lttap1azqmnl8qjdw7o78j7u4&st=3degrlcg&dl=1"
-    
-}
+VECTORSTORE_LINKS=[
+    "chroma.sqlite3",
+    "data_level0.bin",
+    "header.bin"
+    "index_metadata.pickle",
+    "length.bin",
+    "link_lists.bin"]
 
-def download_file (path,url):
-    r = requests.get(url, allow_redirects=True)
-    open(path, 'wb').write(r.content)
-    del r
+def download_file(local_path,dropbox_path,access_token=st.secrets["DROPBOX_ACCESS_TOKEN"]):
+    # Initialize a Dropbox object using the access token
+    dbx = dropbox.Dropbox(access_token)
+    # Download the file to the local path
+    with open(local_path, "wb") as f:
+        metadata, res = dbx.files_download(path=dropbox_path)
+        f.write(res.content)
 
 # Session State Initialization for Optimized Performance---------------------------------------------
 
@@ -136,24 +137,10 @@ if "retriever" not in st.session_state:
         os.makedirs(VECSTORE_PERSIST_DIRECTORY)
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME)
-    
-    def download_file_wrapper(file_path, url):
-        download_file(file_path, url)
-
     with st.spinner("Downloading Product Catalogue..."):
-        # Use ThreadPoolExecutor to download chroma.sqlite3 and VECTORSTORE_LINKS concurrently
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            # Submit the chroma.sqlite3 download task
-            futures = [
-                executor.submit(download_file_wrapper, VECSTORE_PERSIST_DIRECTORY + "/chroma.sqlite3", CHROMA_SQLITE3)
-            ]
-            # Submit the VECTORSTORE_LINKS download tasks
-            futures.extend([
-                executor.submit(download_file_wrapper, VECSTORE_PERSIST_DIRECTORY + CHROMA_SUBDIR_NAME + "/" + key, VECTORSTORE_LINKS[key])
-                for key in VECTORSTORE_LINKS
-            ])
-            # Wait for all futures to complete
-            concurrent.futures.wait(futures)
+        download_file(VECSTORE_PERSIST_DIRECTORY+VECTORSTORE_LINKS[0],DROPBOX_DIR+VECTORSTORE_LINKS[0])
+        for item in VECTORSTORE_LINKS[1:]:
+            download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+item,DROPBOX_DIR+item)
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY))
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME))
     chromadb.api.client.SharedSystemClient.clear_system_cache()

@@ -48,6 +48,9 @@ The dataset used, compiled by McAuley Lab in 2023, encompasses a comprehensive c
 ## Demo
 ##### The app demo is hosted & available on the following link: [Demo Link](https://gift-recommendation-chatbot.streamlit.app/)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://gift-recommendation-chatbot.streamlit.app/)
+- App Screenshot:
+  ![image](https://github.com/user-attachments/assets/b74d5826-c422-4a3a-90c1-12596f6f3687)
+
 
 
 ---
@@ -60,8 +63,8 @@ A **presentation** is available as a **PDF** file in the repo `Gift_Recommendati
 
 ## Notebooks Overview
 
-1. **rag.ipynb**:
-   - Provides a comprehensive analysis of the dataset, including visualizations and insights into product features and descriptions.
+1. **DataPreprocessing.ipynb**:
+   - Used to preprocess the Amazon Dataset and extract products with rich text features for the demo.
 
 ---
 

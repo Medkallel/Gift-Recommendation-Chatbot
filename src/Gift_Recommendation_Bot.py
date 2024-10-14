@@ -130,14 +130,18 @@ if "retriever" not in st.session_state:
     embeddings = TogetherEmbeddings(
         model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
     )
-    shutil.rmtree(VECSTORE_PERSIST_DIRECTORY)
+    try:
+        shutil.rmtree(VECSTORE_PERSIST_DIRECTORY)
+    except:
+        pass
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY)
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME)
-    download_file(VECSTORE_PERSIST_DIRECTORY+"/chroma.sqlite3",CHROMA_SQLITE3)
-    for key in VECTORSTORE_LINKS:
-        download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+key,VECTORSTORE_LINKS[key])
+    with st.spinner("Downloading Product Catalogue..."):
+        download_file(VECSTORE_PERSIST_DIRECTORY+"/chroma.sqlite3",CHROMA_SQLITE3)
+        for key in VECTORSTORE_LINKS:
+            download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+key,VECTORSTORE_LINKS[key])
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY))
     st.write(os.listdir(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME))
     vectorstore = Chroma(

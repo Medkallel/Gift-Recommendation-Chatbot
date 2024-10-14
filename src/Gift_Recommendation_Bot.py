@@ -7,6 +7,7 @@ import time
 import shutil
 import dropbox
 import streamlit as st
+from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_openai import ChatOpenAI
 from langchain.chains import RetrievalQA
@@ -16,6 +17,7 @@ from langchain_together import TogetherEmbeddings
 
 import chromadb
 
+load_dotenv()
 
 st.set_page_config(page_icon="🎁", page_title="Gift Recommendation Assistant")
 
@@ -102,6 +104,8 @@ To get started, could you share a few details?
 """
 
 # Constants
+try: TOGETHER_API_KEY =  st.secrets["TOGETHER_API_KEY"] # For Streamlit Deployment
+except: TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY") # For Docker Container
 NB_RECOMMENDATIONS = 6  # Number of recommendations to return
 LLM_MODEL_NAME = "meta-llama/Llama-Vision-Free"
 EMBEDDINGS_MODEL_NAME = "togethercomputer/m2-bert-80M-2k-retrieval"
@@ -116,9 +120,13 @@ VECTORSTORE_LINKS=[
     "length.bin",
     "link_lists.bin"]
 
-def download_file(local_path,dropbox_path,access_token=st.secrets["DROPBOX_ACCESS_TOKEN"]):
-    # Initialize a Dropbox object using the access token
-    dbx = dropbox.Dropbox(access_token)
+# Function to get a new access token using the refresh token
+def get_access_token(app_key="h1rydmpe9u1bhq4", app_secret="n16co7zujixestu", refresh_token="sJZIXhr8q50AAAAAAAAAAXRwzMpXObsfFGdiXKB6P6wn46HgcbZ2fBD6DLeXX1Ny"):
+    oauth_flow = dropbox.DropboxOAuth2FlowNoRedirect(app_key, app_secret, token_access_type='offline')
+    oauth_result = oauth_flow.refresh_access_token(refresh_token)
+    return oauth_result.access_token
+
+def download_file(dbx,local_path,dropbox_path):
     # Download the file to the local path
     with open(local_path, "wb") as f:
         metadata, res = dbx.files_download(path=dropbox_path)
@@ -128,20 +136,24 @@ def download_file(local_path,dropbox_path,access_token=st.secrets["DROPBOX_ACCES
 
 # Initialize retriever, vectorstore & embeddings model if not already in session state
 if "retriever" not in st.session_state:
+    st.text("TOGETHER_API_KEY: "+TOGETHER_API_KEY)
     embeddings = TogetherEmbeddings(
-        model=EMBEDDINGS_MODEL_NAME, api_key=st.secrets["TOGETHER_API_KEY"]
+        model=EMBEDDINGS_MODEL_NAME, api_key=TOGETHER_API_KEY
     )
+    
     if os.path.exists(VECSTORE_PERSIST_DIRECTORY):
         shutil.rmtree(VECSTORE_PERSIST_DIRECTORY)
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY)
     if not os.path.exists(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME):
         os.makedirs(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME)
-    print(VECTORSTORE_LINKS[1:])
+
     with st.spinner("Downloading Product Catalogue..."):
+        # Initialize a Dropbox object using the access token
+        dbx = dropbox.Dropbox(get_access_token())
         for item in VECTORSTORE_LINKS[1:]:
-            download_file(VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+item,DROPBOX_DIR+item)
-        download_file(VECSTORE_PERSIST_DIRECTORY+VECTORSTORE_LINKS[0],DROPBOX_DIR+VECTORSTORE_LINKS[0])
+            download_file(dbx,VECSTORE_PERSIST_DIRECTORY+CHROMA_SUBDIR_NAME+"/"+item,DROPBOX_DIR+item)
+        download_file(dbx,VECSTORE_PERSIST_DIRECTORY+VECTORSTORE_LINKS[0],DROPBOX_DIR+VECTORSTORE_LINKS[0])
     chromadb.api.client.SharedSystemClient.clear_system_cache()
     vectorstore = Chroma(
         persist_directory=VECSTORE_PERSIST_DIRECTORY, embedding_function=embeddings
@@ -154,7 +166,7 @@ if "retriever" not in st.session_state:
 if "llm" not in st.session_state:
     st.session_state.llm = ChatOpenAI(
         base_url="https://api.together.xyz/v1",
-        api_key=st.secrets["TOGETHER_API_KEY"],
+        api_key=TOGETHER_API_KEY,
         model=LLM_MODEL_NAME,
     )
 

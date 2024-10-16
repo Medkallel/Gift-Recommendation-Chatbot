@@ -10,7 +10,6 @@
 -   [Description](#description)
 -   [Objectives](#objectives)
 -   [Demo](#demo)
-<!-- -   [Presentation](#presentation) -->
 -   [Notebooks Overview](#notebooks-overview)
 -   [Using Docker](#using-docker)
 -   [Installation](#installation)
@@ -18,6 +17,7 @@
 -   [Project Structure](#project-structure)
 -   [Collaborators](#collaborators)
 -   [License](#license)
+<!-- -   [Presentation](#presentation) -->
 
 ---
 
